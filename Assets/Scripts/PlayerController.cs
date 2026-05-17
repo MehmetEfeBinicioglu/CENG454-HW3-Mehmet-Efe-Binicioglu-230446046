@@ -27,7 +27,12 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                IDamageable damageable = hit.collider.GetComponent<IDamageable>();
+                IDamageable damageable = hit.collider.GetComponent<EnemyHealthDecorator>();
+                if (damageable == null)
+                {
+                    damageable = hit.collider.GetComponent<IDamageable>();
+                }
+
                 if (damageable != null && hit.collider.gameObject != FindFirstObjectByType<CoreHealth>().gameObject)
                 {
                     damageable.TakeDamage(10);

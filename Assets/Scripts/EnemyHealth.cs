@@ -10,6 +10,11 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        ResetHealth();
+    }
+
+    public void ResetHealth()
+    {
         currentHealth = maxHealth;
     }
 
@@ -19,7 +24,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (currentHealth <= 0)
         {
             OnEnemyDeath?.Invoke();
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }
