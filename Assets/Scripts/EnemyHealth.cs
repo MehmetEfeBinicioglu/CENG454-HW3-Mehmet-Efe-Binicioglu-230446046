@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
-public class CoreHealth : MonoBehaviour, IDamageable
+public class EnemyHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int maxHealth = 10;
     private int currentHealth;
+
+    public static event Action OnEnemyDeath;
 
     private void Start()
     {
@@ -15,7 +18,8 @@ public class CoreHealth : MonoBehaviour, IDamageable
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
-            currentHealth = 0;
+            OnEnemyDeath?.Invoke();
+            Destroy(gameObject);
         }
     }
 }
