@@ -733,6 +733,8 @@ MonoBehaviour:
   - {fileID: 293338567}
   - {fileID: 1857829813}
   - {fileID: 1215438017}
+  maxWaves: 2
+  enemiesPerWave: 3
 --- !u!1 &1215438016
 GameObject:
   m_ObjectHideFlags: 0

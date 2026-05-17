@@ -12,20 +12,18 @@ public class EnemyPool : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
-    }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-    private void Start()
-    {
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject enemy = Instantiate(enemyPrefab);
-            enemy.SetActive(false);
-            pooledEnemies.Add(enemy);
+            GameObject obj = Instantiate(enemyPrefab);
+            obj.SetActive(false);
+            pooledEnemies.Add(obj);
         }
     }
 
-    public GameObject GetEnemy()
+    public GameObject GetPooledEnemy()
     {
         for (int i = 0; i < pooledEnemies.Count; i++)
         {
@@ -35,9 +33,9 @@ public class EnemyPool : MonoBehaviour
             }
         }
 
-        GameObject enemy = Instantiate(enemyPrefab);
-        enemy.SetActive(false);
-        pooledEnemies.Add(enemy);
-        return enemy;
+        GameObject obj = Instantiate(enemyPrefab);
+        obj.SetActive(false);
+        pooledEnemies.Add(obj);
+        return obj;
     }
 }

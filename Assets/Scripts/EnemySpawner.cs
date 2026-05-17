@@ -2,65 +2,69 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private float spawnInterval = 2f;
     [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private int maxWaves = 3;
+    [SerializeField] private int enemiesPerWave = 5;
 
-    private float nextSpawnTime;
+    private float timer;
+    private int currentWave = 0;
+    private int enemiesSpawnedInCurrentWave = 0;
+    private bool isSpawningFinished = false;
 
     private void Update()
     {
-        if (Time.time >= nextSpawnTime)
+        if (isSpawningFinished)
+        {
+            CheckWinCondition();
+            return;
+        }
+
+        timer += Time.deltaTime;
+
+        if (timer >= spawnInterval)
         {
             SpawnEnemy();
-            nextSpawnTime = Time.time + spawnInterval;
+            timer = 0f;
         }
     }
 
     private void SpawnEnemy()
     {
-        if (spawnPoints.Length == 0 || EnemyPool.Instance == null) return;
+        if (spawnPoints.Length == 0) return;
 
-        Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        GameObject enemy = EnemyPool.Instance.GetEnemy();
-
+        GameObject enemy = EnemyPool.Instance.GetPooledEnemy();
         if (enemy != null)
         {
-            enemy.transform.position = randomSpawnPoint.position;
-            enemy.transform.rotation = randomSpawnPoint.rotation;
-            
-            EnemyHealth healthComponent = enemy.GetComponent<EnemyHealth>();
-            if (healthComponent != null)
-            {
-                healthComponent.ResetHealth();
-            }
-
-            ShieldDecorator existingShield = enemy.GetComponent<ShieldDecorator>();
-            if (existingShield != null)
-            {
-                Destroy(existingShield);
-            }
-
-            if (Random.value > 0.7f)
-            {
-                ShieldDecorator shield = enemy.AddComponent<ShieldDecorator>();
-                shield.SetupDecorator(healthComponent);
-                shield.ResetShield(10);
-            }
-
-            Enemy enemyComponent = enemy.GetComponent<Enemy>();
-            if (enemyComponent != null)
-            {
-                if (Random.value > 0.5f)
-                {
-                    enemyComponent.SetMovementStrategy(new DirectMoveStrategy());
-                }
-                else
-                {
-                    enemyComponent.SetMovementStrategy(new FastZigZagMoveStrategy());
-                }
-            }
-
+            Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            enemy.transform.position = randomPoint.position;
+            enemy.transform.rotation = randomPoint.rotation;
             enemy.SetActive(true);
+
+            enemiesSpawnedInCurrentWave++;
+
+            if (enemiesSpawnedInCurrentWave >= enemiesPerWave)
+            {
+                enemiesSpawnedInCurrentWave = 0;
+                currentWave++;
+
+                if (currentWave >= maxWaves)
+                {
+                    isSpawningFinished = true;
+                }
+            }
         }
+    }
+
+    private void CheckWinCondition()
+    {
+        GameObject[] activeEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+        
+        foreach (GameObject enemy in activeEnemies)
+        {
+            if (enemy.activeInHierarchy) return;
+        }
+
+        GameManager.Instance.WinGame();
     }
 }

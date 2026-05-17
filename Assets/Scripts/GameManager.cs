@@ -3,8 +3,15 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
     private bool isGameOver;
     private int score;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     private void OnEnable()
     {
@@ -43,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (isGameOver && (Input.GetKeyDown(KeyCode.R) || (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.rKey.wasPressedThisFrame)))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
